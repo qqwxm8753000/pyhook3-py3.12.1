@@ -1,0 +1,38 @@
+name: Build and Upload Wheel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.12.1
+
+    - name: Install MSVC
+      uses: lpenz/setup-msvc@v1
+
+    - name: Install SWIG
+      uses: kylef/swig-action@v1
+
+    - name: Extract a.tar.gz
+      run: |
+        Expand-Archive -Path a.tar.gz -DestinationPath extracted_folder
+
+    - name: Build Wheel
+      run: python setup.py bdist_wheel
+
+    - name: Upload Wheel
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheel
+        path: ./dist
